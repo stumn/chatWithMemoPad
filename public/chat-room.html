@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>チャットページ</title>
+  <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+
+<body>
+  <header>
+    <button id="backButton" onclick="BackToLogin()"> ⇦ back to login </button>
+    <div>
+      <span id="onlines"></span>
+      <span id="sign-up-name"></span>
+    </div>
+    <button id="docsButton"> go to document ⇨ </button>
+  </header>
+
+  <main>
+
+    <div id="listsContainer">
+      <div id="messageLists"></div>
+
+      <!-- memo 3つ -->
+      <div id="memoLists">
+        <div class="memoList">
+          <textarea></textarea>
+          <button>clear</button>
+          <button>insert</button>
+          <button>send</button>
+        </div>
+        <div class="memoList">
+          <textarea></textarea>
+          <button>clear</button>
+          <button>insert</button>
+          <button>send</button>
+        </div>
+        <div class="memoList">
+          <textarea></textarea>
+          <button>clear</button>
+          <button>insert</button>
+          <button>send</button>
+        </div>
+
+        <!-- 一面メモ -->
+        <!-- <textarea id="memoLists"></textarea> -->
+      </div>
+
+      <button id="notification"></button>
+
+      <form id="form" action="">
+        <select name="name" id="name-select">
+          <option value="loginName" selected></option>
+          <option value="anonymous">匿名</option>
+        </select>
+
+        <input id="input" autocomplete="off" placeholder="メモ あなただけに表示" pattern=".*\S+.*" required>
+
+        <select name="which" id="sendTo">
+          <option value="personal" selected>自分だけ</option>
+          <!-- <option value="group">グループ</option> -->
+          <option value="all">全員</option>
+        </select>
+
+        <button id="formButton">Memo</button>
+      </form>
+
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/chat-room.js"></script>
+</body>
+
+</html>

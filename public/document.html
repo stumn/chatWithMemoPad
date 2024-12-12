@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ドキュメントページ</title>
+  <link rel="stylesheet" type="text/css" href="/document.css">
+</head>
+
+<body>
+  <header>
+    <button id="backButton" onclick="BackToChatRoom()"> ⇦ back to chat </button>
+    <span id="login-name"></span>
+  </header>
+
+  <main>
+    <div id="document-container1">
+      <div class="docHeader">
+        <h2>わたしのまとめ</h2>
+        <button class="CopyButton">copy the text</button>
+        <button class="toggleVisibilityOfName">hide name</button>
+      </div>
+      <ul id="myDocument"></ul>
+    </div>
+    <div id="document-container2">
+      <div class="docHeader">
+        <h2>みんなのまとめ</h2>
+        <button class="CopyButton">copy the text</button>
+        <button class="toggleVisibilityOfName">hide name</button>
+      </div>
+      <ul id="everybodyDocument"></ul>
+    </div>
+  </main>
+
+  <!-- ブラウザ側のスクリプト -->
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <script>
+    let loginName, randomString;
+    // ドキュメントリスト要素の取得
+    const documentList = document.getElementById('myDocument');
+    const everybodyDocumentList = document.getElementById('everybodyDocument');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const pathname = window.location.pathname;
+
+      loginName = getCookie('userName');
+      console.log('loginName: ' + loginName);
+      document.getElementById('login-name').textContent = loginName + ' さん';
+
+      randomString = decodeURIComponent(pathname.split('/')[1]);
+      console.log('randomString: ' + randomString);
+
+      // APIに接続して、ブックマークされたポストだけ取得
+      fetch(`/api/${randomString}/messages`)
+        .then(response => response.json())
+        .then(data => {
+          // わたしのまとめ
+          const msg = data.mine;
+          msg.forEach(mine => {
+            console.log(mine);
+            const li = createDocumentElement(mine);
+            documentList.append(li);
+          });
+
+          // みんなのまとめ
+          const everybodyMsg = data.everybody;
+          everybodyMsg.forEach(everybodyMsg => {
+            const li = createDocumentElement(everybodyMsg);
+            everybodyDocumentList.append(li);
+          });
+        });
+    });
+
+    function getCookie(name) {
+      let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      if (match) return match[2];
+      return null;
+    }
+
+    function createDocumentElement(msg) {
+      const li = document.createElement('li');
+      li.textContent = msg.msg;
+
+      let displayName = msg.name ? `  - ${msg.name}` : '';
+      li.classList.add(msg.name ? 'otherPersonPost' : 'myMemo');
+      if (msg.wasRocketed) {
+        console.log('wasRocketed', msg.id);
+        li.classList.add('wasRocketed');
+      }
+
+      const span = document.createElement('span');
+      span.textContent = displayName;
+      span.classList.add('displayName');
+      li.append(span);
+
+      li.setAttribute("id", msg.id);
+      return li;
+    }
+
+    document.addEventListener('click', (event) => {
+      const cl = event.target.classList;
+      if (cl.contains('CopyButton')) { copyText(event); }
+      if (cl.contains('toggleVisibilityOfName')) { hideName(event); }
+    });
+
+    function copyText(event) {
+      console.log(event.target);
+      const parentElement = event.target.closest('.docHeader').nextElementSibling;
+      const text = parentElement.innerText;
+
+      navigator.clipboard.writeText(text).then(function () {
+        alert("テキストがコピーされました！");
+      }).catch(function (error) {
+        alert("コピーに失敗しました: " + error);
+      });
+    }
+
+    function BackToChatRoom() {
+      window.location.href = `/${randomString}/chat`; // 今のところ、別人になっちゃう
+    }
+
+    function hideName(event) {
+      const header = event.target.closest('.docHeader');
+      const nameDisplayElements = header.nextElementSibling.querySelectorAll('.displayName');
+      const isHidden = nameDisplayElements[0].style.visibility === 'hidden';
+
+      for (let i = 0; i < nameDisplayElements.length; i++) {
+        nameDisplayElements[i].style.visibility = isHidden ? 'visible' : 'hidden';
+      }
+      event.target.textContent = isHidden ? 'hide name' : 'show name';
+    }
+
+
+
+  </script>
+</body>
+
+</html>
