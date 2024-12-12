@@ -713,6 +713,7 @@ input.addEventListener('focus', () => {
     input.style.outlineColor = sendTo.value === 'all' ? 'rgb(56, 92, 168)' : 'rgb(32, 178, 170)';
 });
 
+let chatName;
 const nameSelect = $('name-select');
 nameSelect.addEventListener('change', () => {
     chatName = nameSelect.value;
