@@ -1,4 +1,4 @@
-// const socket = io.connect('https://chat-with-bookmark-1.onrender.com', {
+// const socket = io.connect('https://chatwithmemopad.onrender.com', {
 //     reconnect: true,                // 自動再接続を有効にする
 //     reconnectionAttempts: Infinity, // 無限回再接続を試みる
 //     reconnectionDelay: 1000,        // 再接続前の待機時間（ミリ秒）
@@ -713,11 +713,23 @@ input.addEventListener('focus', () => {
     input.style.outlineColor = sendTo.value === 'all' ? 'rgb(56, 92, 168)' : 'rgb(32, 178, 170)';
 });
 
+const nameSelect = $('name-select');
+nameSelect.addEventListener('change', () => {
+    chatName = nameSelect.value;
+    console.log('chatName: ', chatName);
+});
+
 form.addEventListener('submit', (event) => {
     event.preventDefault();
-    sendTo.value === 'all'
-        ? socket.emit('chat message', input.value)
-        : socket.emit('personal memo', input.value);
+    if (sendTo.value === 'all') {
+        console.log(chatName);
+        const data = { msg: input.value, chatName };
+        socket.emit('chat message', data);
+    } else {
+        console.log(chatName);
+        socket.emit('personal memo', input.value);
+
+    }
     input.value = '';
 });
 

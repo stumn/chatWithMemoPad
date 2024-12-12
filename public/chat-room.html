@@ -23,50 +23,28 @@
 
     <div id="listsContainer">
       <div id="messageLists"></div>
+      <!-- 一面メモ -->
+      <textarea id="memoLists"></textarea>
+    </div>
 
-      <!-- memo 3つ -->
-      <div id="memoLists">
-        <div class="memoList">
-          <textarea></textarea>
-          <button>clear</button>
-          <button>insert</button>
-          <button>send</button>
-        </div>
-        <div class="memoList">
-          <textarea></textarea>
-          <button>clear</button>
-          <button>insert</button>
-          <button>send</button>
-        </div>
-        <div class="memoList">
-          <textarea></textarea>
-          <button>clear</button>
-          <button>insert</button>
-          <button>send</button>
-        </div>
+    <button id="notification"></button>
 
-        <!-- 一面メモ -->
-        <!-- <textarea id="memoLists"></textarea> -->
-      </div>
+    <form id="form" action="">
+      <select name="which" id="sendTo">
+        <option value="personal" selected>自分だけのメモ</option>
+        <option value="group">グループでチャット</option>
+        <option value="all">全員でチャット</option>
+      </select>
 
-      <button id="notification"></button>
+      <select name="name" id="name-select">
+        <option value="loginName" selected></option>
+        <option value="anonymous">匿名</option>
+      </select>
 
-      <form id="form" action="">
-        <select name="name" id="name-select">
-          <option value="loginName" selected></option>
-          <option value="anonymous">匿名</option>
-        </select>
+      <input id="input" autocomplete="off" placeholder="メモ あなただけに表示" pattern=".*\S+.*" required>
 
-        <input id="input" autocomplete="off" placeholder="メモ あなただけに表示" pattern=".*\S+.*" required>
-
-        <select name="which" id="sendTo">
-          <option value="personal" selected>自分だけ</option>
-          <!-- <option value="group">グループ</option> -->
-          <option value="all">全員</option>
-        </select>
-
-        <button id="formButton">Memo</button>
-      </form>
+      <button id="formButton">Memo</button>
+    </form>
 
   </main>
 

@@ -78,11 +78,11 @@ div#listsContainer {
     width: 22%;
     margin: 0.1rem;
     padding: 0.5rem;
-    /* background-color: gray; */
+    background-color: #20B2AA;
     flex-flow: column;
 }
-
-div.memoList {
+/* 
+textarea.memoList {
     resize: none;
     padding: 0.3rem;
     width: 95%;
@@ -91,14 +91,14 @@ div.memoList {
     text-align: center;
     margin-bottom: 5px;
     background-color: #20B2AA;
-}
-
+} */
+/* 
 div.memoList>textarea {
     height: 75%;
     width: 80%;
     resize: none;
     border: none;
-}
+} */
 
 /* 履歴 */
 #messageLists {

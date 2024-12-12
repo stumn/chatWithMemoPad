@@ -66,11 +66,13 @@ io.on('connection', async (socket) => {
     setInterval(decreaseMemoCount, 1000 * 5);
 
     // チャット（選択肢付き）メッセージが送信されたとき
-    socket.on('chat message', async (msg) => {
+    socket.on('chat message', async (data) => {
+      const msg = data.msg;
+      const chatName = data.chatName;
       let postSet;
       if ((msg.match(/::/g) || []).length >= 2) { // 最初に出現する "::" で分割. 質問と選択肢に分ける
         const { formattedQuestion, options } = parseQuestionOptions(msg);
-        const record = await SaveSurveyMessage(name, formattedQuestion, options);
+        const record = await SaveSurveyMessage(chatName, formattedQuestion, options);
         postSet = {
           id: record.id,
           name: record.name,
@@ -80,7 +82,7 @@ io.on('connection', async (socket) => {
           createdAt: organizeCreatedAt(record.createdAt)
         }
       } else {
-        const p = await SaveChatMessage(name, msg);
+        const p = await SaveChatMessage(chatName, msg);
         postSet = {
           id: p.id,
           name: p.name,
@@ -233,7 +235,7 @@ async function updateMemoStatusToOpened(memoId) {
 
 function notifyRevealMemo(record, name) {
   console.log('メモ公開通知:', record.memoCreatedAt, record.createdAt);
-  
+
   const createdAt = new Date(record.createdAt).getTime();
   const memoCreatedAt = new Date(record.memoCreatedAt).getTime();
   const difference = createdAt - memoCreatedAt;
@@ -243,9 +245,9 @@ function notifyRevealMemo(record, name) {
   const id = record.id;
   console.log('id:', id);
 
-  const data = { name, difference, nowTime, id};
+  const data = { name, difference, nowTime, id };
   console.log(data);
-  
+
   io.emit('notification', data);
 }
 
