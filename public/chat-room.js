@@ -29,7 +29,7 @@ const notification = $('notification');
 const form = $('form');
 const input = $('input');
 const formButton = $('formButton');
-// const docsButton = $('docsButton');
+const nameSelect = $('name-select');
 
 let dropElement;
 let loginName;
@@ -43,6 +43,7 @@ memoPad.addEventListener('input', () => {
 memoPad.addEventListener('selectionchange', () => {
     updateButtonPosition();
 });
+
 function updateButtonPosition() {
     const start = memoPad.selectionStart;
     const end = memoPad.selectionEnd;
@@ -78,12 +79,32 @@ hoverButton.addEventListener('click', () => {
 // ログイン
 document.addEventListener('DOMContentLoaded', () => {
     const pathname = window.location.pathname;
+
     // loginName = decodeURIComponent(pathname.split('/')[2]);
     loginName = getCookie('userName');
-    console.log('loginName: ', loginName);
-    const nameSelect = $('name-select');
-    const nameSelectIndex = nameSelect.selectedIndex;
-    nameSelect.options[nameSelectIndex].textContent = loginName;
+
+    if (loginName) {
+        console.log('loginName: ', loginName);
+
+        // 既存の<option>を確認し、loginName に一致するものがなければ作成
+        let optionExists = false;
+        for (let i = 0; i < nameSelect.options.length; i++) {
+            if (nameSelect.options[i].value === loginName) {
+                optionExists = true;
+                nameSelect.selectedIndex = i; // 該当オプションを選択状態に
+                break;
+            }
+        }
+
+        // 該当する<option>がない場合、新しい<option>を追加
+        if (!optionExists) {
+            const newOption = document.createElement('option');
+            newOption.value = loginName;
+            newOption.textContent = loginName;
+            // newOption.selected = true; // 新しいオプションを選択状態に
+            nameSelect.appendChild(newOption);
+        }
+    }
 
     const randomString = decodeURIComponent(pathname.split('/')[1]);
 
@@ -108,20 +129,15 @@ socket.on('onlineUsers', (onlines) => {
     $('onlines').textContent = '接続中: ' + onlines.length + '人';
 });
 
+///////////////////////////////////////////////////
 // 伏せカードオープン通知
 const openCardStatus = new Map();
-setInterval(updateStatus, 1000); // update
-// setInterval(alert_reload, 300000);
-
-// function alert_reload() {
-//     alert('再読み込みします');
-//     location.reload();
-// }
 
 socket.on('notification', (data) => {
     openCardStatus.set(data, data.nowTime);
 });
 
+setInterval(updateStatus, 1000);
 function updateStatus() {
     let name, difference, text;
 
@@ -741,34 +757,22 @@ function toggleMemoMode(value) {
     }
 }
 
-input.addEventListener('focus', () => {
-    console.log(sendTo.value);
-    if (sendTo.value === 'default') {
-        alert('送信先を選択してください');
-        sendTo.value = 'personal';
-        return;
-    }
-    input.style.outlineColor = sendTo.value === 'all' ? 'rgb(56, 92, 168)' : 'rgb(32, 178, 170)';
-});
-
 let chatName;
-const nameSelect = $('name-select');
 nameSelect.addEventListener('change', () => {
     chatName = nameSelect.value;
-    console.log('chatName: ', chatName);
+    console.log('changeName: ', chatName);
 });
 
 form.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (sendTo.value === 'all') {
-        console.log(chatName);
-        const data = { msg: input.value, chatName };
-        socket.emit('chat message', data);
-    } else {
-        console.log(chatName);
-        socket.emit('personal memo', input.value);
-
+    console.log(chatName);
+    if (!chatName) {
+        alert('名前を選択してください');
+        return;
     }
+    console.log();
+    const data = { msg: input.value, chatName };
+    socket.emit('chat message', data);
     input.value = '';
 });
 
