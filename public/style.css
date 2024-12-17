@@ -407,6 +407,7 @@ span.bookmark-count {
     font-size: 2rem;
     align-items: center;
     text-align: center;
+    margin-top: 0.5rem;
 }
 
 #name-select {
@@ -431,15 +432,24 @@ span.bookmark-count {
 }
 
 #formButton {
-    background-color: #385ca8;
+    display: inline-block;
+    background-color: #61b0e2;
+    box-shadow: 0 5px 0 #369ada;
+    border-radius: 60px;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    /* 文字の下線を消す */
     border: none;
     padding: 0.5rem 1rem;
     margin: 0.25rem;
-    border-radius: 3px;
     outline: none;
-    color: #fff;
     font-size: 1.25rem;
-    cursor: pointer;
+}
+
+#formButton:active {
+    box-shadow: none;
+    transform: translateY(5px);
 }
 
 /* Private Memo Area */
@@ -454,15 +464,44 @@ span.bookmark-count {
     bottom: 0;
 }
 
-#memoPadButton {
+#memoButtons {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: space-between;
     margin-bottom: 16px;
-    padding: 8px 16px;
-    background-color: #007bff;
+}
+
+#memoPadButton {
+    flex: 3;
+    padding: 8px 10px;
+    background-color: #20b2aa;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: default;
     overflow-y: auto;
+}
+
+#copyButton {
+    flex: 4;
+    padding: 8px 16px;
+    display: inline-block;
+    border: none;
+    padding: 0.8em 3em;
+    background-color: #34b496;
+    box-shadow: 0 5px 0 #298c75;
+    /* 影の太さ・色 */
+    border-radius: 60px;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    /* 文字の下線を消す */
+}
+
+/* クリック時 */
+#copyButton:active {
+    box-shadow: none;
+    transform: translateY(5px);
 }
 
 #memoPad {
@@ -481,9 +520,16 @@ span.bookmark-count {
     position: absolute;
     display: none;
     padding: 10px;
-    background-color: #3498db;
-    color: white;
+    background-color: #61b0e2;
+    box-shadow: 0 5px 0 #369ada;
+    color: #fff;
     border: none;
+    border-radius: 60px;
     cursor: pointer;
     z-index: 1000;
+}
+
+#hoverButton:active {
+    box-shadow: none;
+    transform: translateY(5px);
 }
