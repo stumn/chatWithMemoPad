@@ -23,12 +23,12 @@
       <div id="messageLists"></div>
 
       <div id="pageButtom">
-        <button id="notification"></button>
+        <!-- <button id="notification"></button> -->
 
         <form id="form" action="">
           <select name="name" id="name-select">
             <option value="匿名" selected>匿名</option>
-        </select>
+          </select>
 
           <input id="input" autocomplete="off" placeholder="ここにメッセージを入力" pattern=".*\S+.*" required>
           <button id="formButton">Send</button>
@@ -37,8 +37,11 @@
     </div>
 
     <div id="privateMemo">
-      <button id="memoPadButton">MemoPad</button>
-      <textarea id="memoPad">ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 </textarea>
+      <div id="memoButtons">
+        <button id="memoPadButton">ここはメモ帳</button>
+        <button id="copyButton">テキストコピー📋</button>
+      </div>
+      <textarea id="memoPad">ここにメモを入力できます ここにメモを入力できます ここにメモを入力できます</textarea>
       <button id="hoverButton">メモ公開</button>
     </div>
   </main>

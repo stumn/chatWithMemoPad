@@ -25,7 +25,7 @@ function $(id) {
 const messageLists = $('messageLists');
 const memoPad = $('memoPad');
 const hoverButton = $('hoverButton');
-const notification = $('notification');
+// const notification = $('notification');
 const form = $('form');
 const input = $('input');
 const formButton = $('formButton');
@@ -75,6 +75,15 @@ hoverButton.addEventListener('click', () => {
 
     const data = { msg: selectedText, chatName: loginName, isMemo: true };
     socket.emit('chat message', data);
+});
+
+copyButton.addEventListener('click', () => {
+    const text = memoPad.value;
+    navigator.clipboard.writeText(text).then(function () {
+        alert("テキストがコピーされました！");
+    }).catch(function (error) {
+        alert("コピーに失敗しました: " + error);
+    });
 });
 
 ///////////////////////////////////////////////////////////////////
@@ -133,52 +142,52 @@ socket.on('onlineUsers', (onlines) => {
 
 ///////////////////////////////////////////////////
 // 伏せカードオープン通知
-const openCardStatus = new Map();
+// const openCardStatus = new Map();
 
-socket.on('notification', (data) => {
-    openCardStatus.set(data, data.nowTime);
-});
+// socket.on('notification', (data) => {
+//     openCardStatus.set(data, data.nowTime);
+// });
 
-setInterval(updateStatus, 1000);
-function updateStatus() {
-    let name, difference, text;
+// setInterval(updateStatus, 1000);
+// function updateStatus() {
+//     let name, difference, text;
 
-    for (let [data, date] of openCardStatus) {
-        const elapsedTime = Date.now() - date;
-        if (elapsedTime > 20000) { openCardStatus.delete(data); } // 60sec passed => delete notification
+//     for (let [data, date] of openCardStatus) {
+//         const elapsedTime = Date.now() - date;
+//         if (elapsedTime > 20000) { openCardStatus.delete(data); } // 60sec passed => delete notification
 
-        name = data.name;
-        difference = Math.abs(data.difference);
-        const second = Math.round(difference / 1000);
-        text = second < 0 ? '' : `${name}さんが${second}秒前のメモを公開しました`;
+//         name = data.name;
+//         difference = Math.abs(data.difference);
+//         const second = Math.round(difference / 1000);
+//         text = second < 0 ? '' : `${name}さんが${second}秒前のメモを公開しました`;
 
-        if (difference > 60000) { // case: released memo was saved more than 60sec ago.
-            const minute = Math.round(difference / 60000);
-            text = `${name}さんが${minute}分前のメモを公開しました`;
-        }
-    }
-    notification.textContent = openCardStatus.size > 0 ? text : '';
-}
+//         if (difference > 60000) { // case: released memo was saved more than 60sec ago.
+//             const minute = Math.round(difference / 60000);
+//             text = `${name}さんが${minute}分前のメモを公開しました`;
+//         }
+//     }
+//     notification.textContent = openCardStatus.size > 0 ? text : '';
+// }
 
-notification.addEventListener('click', () => {
-    GoToTheOpenCard(Array.from(openCardStatus.keys())[0].id);
-});
+// notification.addEventListener('click', () => {
+//     GoToTheOpenCard(Array.from(openCardStatus.keys())[0].id);
+// });
 
-function GoToTheOpenCard(targetId) {
-    const targetElement = $(`${targetId}`);
-    if (targetElement) {
-        targetElement.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-        targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.5)';
-        setTimeout(() => {
-            targetElement.style.backgroundColor = '';
-        }, 3000);
-    } else {
-        console.error("指定された要素が見つかりませんでした");
-    }
-}
+// function GoToTheOpenCard(targetId) {
+//     const targetElement = $(`${targetId}`);
+//     if (targetElement) {
+//         targetElement.scrollIntoView({
+//             behavior: "smooth",
+//             block: "center"
+//         });
+//         targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.5)';
+//         setTimeout(() => {
+//             targetElement.style.backgroundColor = '';
+//         }, 3000);
+//     } else {
+//         console.error("指定された要素が見つかりませんでした");
+//     }
+// }
 
 /////////////////////////////////////////////////////////////////////////
 
