@@ -70,14 +70,17 @@ io.on('connection', async (socket) => {
       const msg = data.msg;
       const chatName = data.chatName;
       const isMemo = data.isMemo;
+      console.log('73 chat message:', msg, chatName, isMemo);
 
       let postSet;
       if ((msg.match(/::/g) || []).length >= 2) { // 最初に出現する "::" で分割. 質問と選択肢に分ける
         const { formattedQuestion, options } = parseQuestionOptions(msg);
         const record = await SaveSurveyMessage(chatName, formattedQuestion, options);
+        const nameData = isMemo ? '匿名' : record.name;
+        console.log('chat message:', nameData);
         postSet = {
           id: record.id,
-          name: isMemo ? record.name : '匿名',
+          name: nameData,
           msg: record.msg,
           options: record.options,
           voteSums: record.voteSums,
@@ -85,13 +88,16 @@ io.on('connection', async (socket) => {
         }
       } else {
         const p = await SaveChatMessage(chatName, msg);
+        const nameData = isMemo ? '匿名' : p.name;
+        console.log('chat message:', nameData);
         postSet = {
           id: p.id,
-          name: isMemo ? p.name : '匿名',
+          name: nameData,
           msg: p.msg,
           createdAt: organizeCreatedAt(p.createdAt)
         }
       }
+      console.log('chat message:', postSet);
       socket.emit('myChat', postSet);
       socket.broadcast.emit('chatLogs', postSet);
     });
