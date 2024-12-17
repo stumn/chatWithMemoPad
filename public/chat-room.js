@@ -37,6 +37,7 @@ let loginName;
 // 選択範囲を監視
 memoPad.addEventListener('input', () => {
     updateButtonPosition();
+    updateSaveData();
 });
 
 // 選択範囲の変更を検知
@@ -66,6 +67,11 @@ function updateButtonPosition() {
     } else {
         hoverButton.style.display = 'none';
     }
+}
+
+function updateSaveData() {
+    const text = memoPad.value;
+    localStorage.setItem('memoPad', text);
 }
 
 hoverButton.addEventListener('click', () => {
@@ -99,6 +105,11 @@ document.addEventListener('DOMContentLoaded', () => {
         newOption.value = loginName;
         newOption.textContent = loginName;
         nameSelect.appendChild(newOption);
+    }
+
+    const savedMemo = localStorage.getItem('memoPad');
+    if (savedMemo) {
+        memoPad.value = savedMemo; // 保存されているメモを表示
     }
 
     const pathname = window.location.pathname;
@@ -481,21 +492,20 @@ function handleDragOver(event) {
         return;
     }
     event.preventDefault();
-    this.style.border = '3px solid';
-    this.style.color = '#227B94';
+    this.style.backgroundColor = '#F0F8FF';
 }
 
 function handleDragLeave(event) {
-    this.style.border = ""; // Reset visual feedback
-    this.style.color = '';
+    this.style.backgroundColor = ''; // Reset visual feedback
+    event.preventDefault();
+    event.stopPropagation();
 }
 
 function handleDrop(event) {
-    this.style.border = ""; // Reset visual feedback
-    this.style.color = '';
-
+    this.style.backgroundColor = ''; // Reset visual feedback
     event.preventDefault();
     event.stopPropagation();
+    
     const dropElement = event.target.closest('.ml');
 
     if (!draggedElement) { console.log('no draggedElement'); return; }
