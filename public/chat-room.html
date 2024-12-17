@@ -16,36 +16,32 @@
       <span id="onlines"></span>
       <span id="sign-up-name"></span>
     </div>
-    <button id="docsButton"> go to document ⇨ </button>
   </header>
 
   <main>
-
-    <div id="listsContainer">
+    <div id="publicChat">
       <div id="messageLists"></div>
-      <!-- 一面メモ -->
-      <textarea id="memoLists"></textarea>
+
+      <div id="pageButtom">
+        <button id="notification"></button>
+
+        <form id="form" action="">
+          <select name="name" id="name-select">
+            <option value="loginName" selected></option>
+            <option value="anonymous">匿名</option>
+          </select>
+
+          <input id="input" autocomplete="off" placeholder="ここにメッセージを入力" pattern=".*\S+.*" required>
+          <button id="formButton">Send</button>
+        </form>
+      </div>
     </div>
 
-    <button id="notification"></button>
-
-    <form id="form" action="">
-      <select name="which" id="sendTo">
-        <option value="personal" selected>自分だけのメモ</option>
-        <option value="group">グループでチャット</option>
-        <option value="all">全員でチャット</option>
-      </select>
-
-      <select name="name" id="name-select">
-        <option value="loginName" selected></option>
-        <option value="anonymous">匿名</option>
-      </select>
-
-      <input id="input" autocomplete="off" placeholder="メモ あなただけに表示" pattern=".*\S+.*" required>
-
-      <button id="formButton">Memo</button>
-    </form>
-
+    <div id="privateMemo">
+      <button id="memoPadButton">MemoPad</button>
+      <textarea id="memoPad">ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 ここにメモを入力 </textarea>
+      <button id="hoverButton">メモ公開</button>
+    </div>
   </main>
 
   <script src="/socket.io/socket.io.js"></script>

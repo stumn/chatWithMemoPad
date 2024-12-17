@@ -1,18 +1,18 @@
-const socket = io.connect('https://chatwithmemopad.onrender.com', {
-    reconnect: true,                // 自動再接続を有効にする
-    reconnectionAttempts: Infinity, // 無限回再接続を試みる
-    reconnectionDelay: 1000,        // 再接続前の待機時間（ミリ秒）
-    reconnectionDelayMax: 5000,     // 最大待機時間（ミリ秒）
-    timeout: 10000,                 // 接続試行のタイムアウト時間（ミリ秒）
-});
-
-// const socket = io.connect('localhost:3000', {
+// const socket = io.connect('https://chatwithmemopad.onrender.com', {
 //     reconnect: true,                // 自動再接続を有効にする
 //     reconnectionAttempts: Infinity, // 無限回再接続を試みる
 //     reconnectionDelay: 1000,        // 再接続前の待機時間（ミリ秒）
 //     reconnectionDelayMax: 5000,     // 最大待機時間（ミリ秒）
 //     timeout: 10000,                 // 接続試行のタイムアウト時間（ミリ秒）
 // });
+
+const socket = io.connect('localhost:3000', {
+    reconnect: true,                // 自動再接続を有効にする
+    reconnectionAttempts: Infinity, // 無限回再接続を試みる
+    reconnectionDelay: 1000,        // 再接続前の待機時間（ミリ秒）
+    reconnectionDelayMax: 5000,     // 最大待機時間（ミリ秒）
+    timeout: 10000,                 // 接続試行のタイムアウト時間（ミリ秒）
+});
 
 // html要素の取得
 function $(id) {
@@ -23,15 +23,56 @@ function $(id) {
 }
 
 const messageLists = $('messageLists');
-const memoLists = $('memoLists');
+const memoPad = $('memoPad');
+const hoverButton = $('hoverButton');
 const notification = $('notification');
 const form = $('form');
 const input = $('input');
 const formButton = $('formButton');
-const docsButton = $('docsButton');
+// const docsButton = $('docsButton');
 
 let dropElement;
 let loginName;
+
+// 選択範囲を監視
+memoPad.addEventListener('input', () => {
+    updateButtonPosition();
+});
+
+// 選択範囲の変更を検知
+memoPad.addEventListener('selectionchange', () => {
+    updateButtonPosition();
+});
+function updateButtonPosition() {
+    const start = memoPad.selectionStart;
+    const end = memoPad.selectionEnd;
+    const middle = (start + end) / 2;
+    const selectedText = memoPad.value.substring(start, end);
+
+    if (selectedText) {
+        const textareaRect = memoPad.getBoundingClientRect();
+        const lineHeight = 14; // テキストの行の高さ (適宜調整)
+
+        console.log(textareaRect.left, textareaRect.top);
+
+        // 選択範囲の位置を計算 (簡易計算)
+        const offsetX = textareaRect.right + 10; // 選択の右下にずらす
+        const offsetY = textareaRect.top + ((middle / memoPad.cols) * lineHeight); // 選択の上にずらす
+
+        hoverButton.style.left = offsetX + 'px';
+        hoverButton.style.top = offsetY + 'px';
+        hoverButton.style.display = 'block';
+    } else {
+        hoverButton.style.display = 'none';
+    }
+}
+
+hoverButton.addEventListener('click', () => {
+    const start = memoPad.selectionStart;
+    const end = memoPad.selectionEnd;
+    const selectedText = memoPad.value.substring(start, end);
+    alert('選択されたテキスト: ' + selectedText);
+});
 
 ///////////////////////////////////////////////////////////////////
 // ログイン
@@ -45,12 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
     nameSelect.options[nameSelectIndex].textContent = loginName;
 
     const randomString = decodeURIComponent(pathname.split('/')[1]);
-    const docURL = `/${randomString}/document`;
-    docsButton.addEventListener('click', e => {
-        docURL
-            ? window.location.href = docURL
-            : alert('しばらくしてからもう一度お試しください。');
-    });
 
     // ログイン情報をサーバに送信
     const loginData = { loginName, randomString };
@@ -660,15 +695,23 @@ function makeBookmarkButton(message) {
 function setupBookmarkClickHandler(button, message) {
     button.addEventListener('click', (event) => {
         event.stopPropagation(); // 親や子への伝播を防ぐ
-        console.log('pushed bookmark button', 'message.id: ', message.id);
-        console.log('event.target: ', event.target);
 
         button.classList.toggle("active");
         const isActive = button.classList.contains("active");
-        button.textContent = isActive ? '★' : '☆';
+        if (isActive) {
+            button.textContent = '★';
+            addToMemoPad(message);
+        } else {
+            button.textContent = '☆';
+        }
         const data = { id: message.id, active: isActive };
         socket.emit('bookmark', data);
     });
+}
+
+function addToMemoPad(message) {
+    const messageContent = message.msg + '(' + message.name + ')' + '\n';
+    memoPad.value += messageContent;
 }
 
 function enableDragAndDrop(item) {
@@ -683,11 +726,6 @@ function appendChildWithIdAndScroll(item, message = {}, shouldScroll = true) {
     message.id ? item.id = message.id : console.log('message.id is not found', message.msg);
     if (shouldScroll) { window.scrollTo(0, document.body.scrollHeight); }
 }
-
-const sendTo = $('sendTo')
-sendTo.addEventListener('change', () => {
-    toggleMemoMode(sendTo.value);
-});
 
 function toggleMemoMode(value) {
     if (value === 'all') {
