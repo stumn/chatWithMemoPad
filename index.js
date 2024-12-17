@@ -69,13 +69,15 @@ io.on('connection', async (socket) => {
     socket.on('chat message', async (data) => {
       const msg = data.msg;
       const chatName = data.chatName;
+      const isMemo = data.isMemo;
+
       let postSet;
       if ((msg.match(/::/g) || []).length >= 2) { // 最初に出現する "::" で分割. 質問と選択肢に分ける
         const { formattedQuestion, options } = parseQuestionOptions(msg);
         const record = await SaveSurveyMessage(chatName, formattedQuestion, options);
         postSet = {
           id: record.id,
-          name: record.name,
+          name: isMemo ? record.name : '匿名',
           msg: record.msg,
           options: record.options,
           voteSums: record.voteSums,
@@ -85,7 +87,7 @@ io.on('connection', async (socket) => {
         const p = await SaveChatMessage(chatName, msg);
         postSet = {
           id: p.id,
-          name: p.name,
+          name: isMemo ? p.name : '匿名',
           msg: p.msg,
           createdAt: organizeCreatedAt(p.createdAt)
         }

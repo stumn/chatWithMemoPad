@@ -72,7 +72,9 @@ hoverButton.addEventListener('click', () => {
     const start = memoPad.selectionStart;
     const end = memoPad.selectionEnd;
     const selectedText = memoPad.value.substring(start, end);
-    alert('選択されたテキスト: ' + selectedText);
+
+    const data = { msg: selectedText, chatName: loginName, isMemo: true };
+    socket.emit('chat message', data);
 });
 
 ///////////////////////////////////////////////////////////////////
@@ -183,7 +185,7 @@ function GoToTheOpenCard(targetId) {
 // 過去ログ受信
 socket.on('pastLogs', ({ pastLogs, stackLogs }) => {
     handlePastLogs(pastLogs, stackLogs);
-    window.scrollTo(0, document.body.scrollHeight);
+    messageLists.scrollTop = messageLists.scrollHeight;
 });
 
 // ソケットイベントと対応するハンドラをマッピング
@@ -740,21 +742,7 @@ function enableDragAndDrop(item) {
 function appendChildWithIdAndScroll(item, message = {}, shouldScroll = true) {
     messageLists.appendChild(item);
     message.id ? item.id = message.id : console.log('message.id is not found', message.msg);
-    if (shouldScroll) { window.scrollTo(0, document.body.scrollHeight); }
-}
-
-function toggleMemoMode(value) {
-    if (value === 'all') {
-        input.placeholder = 'チャット みんなに表示';
-        input.style.outlineColor = 'rgb(56, 92, 168)';
-        formButton.textContent = 'Send';
-        formButton.classList.add('chatButton');
-    } else {
-        input.placeholder = 'メモ あなただけに表示';
-        input.style.outlineColor = 'rgb(32, 178, 170)';
-        formButton.textContent = 'Memo';
-        formButton.classList.remove('chatButton');
-    }
+    if (shouldScroll) { messageLists.scrollTop = messageLists.scrollHeight; }
 }
 
 let chatName;
