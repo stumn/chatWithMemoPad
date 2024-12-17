@@ -192,7 +192,6 @@ const socketEventHandlers = {
     myOpenCard: processMyOpenCard,        // 自分のメモボタン公開（ドラッグ可能）
     downCard: processDownCard,            // 他の人のメモボタン公開
 
-    kasaneMemoOpen: handleKasaneMemoOpen,     // ドロップ自分の重ねてオープン
     broadcastDrop: handleBroadcastDrop,       // ドロップ他の人の重ねてオープン
 
     updateVote: handleUpdateVote,         // 投票を受信
@@ -241,7 +240,9 @@ function addAccordionLog(pastElement, stackLogs) {// 子分がいる過去ログ
 function addSimpleLog(pastElement) {// 子分がいない過去ログ
     const item = buildMlElement(pastElement);
     if (pastElement.memoId) { item.classList.add('downCard', 'visible'); }
-    pastElement.name === loginName ? enableDragAndDrop(item) : addBeingDraggedListeners;
+    pastElement.name === loginName
+        ? enableDragAndDrop(item)
+        : addBeingDraggedListeners(item);
     appendChildWithIdAndScroll(item, pastElement, true);
 }
 
@@ -353,38 +354,6 @@ function processDownCard(msg, isMine = false) {
     }
 }
 
-function handleKasaneMemoOpen(data) {
-    console.log('handleKasaneMemoOpen: ', data);
-    // まず公開したメモをチャット投稿として表示
-    const post = data.postSet;
-    const item = buildMlElement(post);
-    appendChildWithIdAndScroll(item, post, false);
-    console.log('item: ', item);
-
-    // ドロップ先の要素を取得
-    const dropElement = $(data.dropId);
-    const parentDIV = dropElement.closest('.accordion');
-    if (parentDIV) {
-        addChildElement(parentDIV, item);
-
-        const detailsContainer = $(data.postSet.id).closest('.accordion');
-        const childCount = detailsContainer.children.length; // 要素ノードの数を取得
-        detailsContainer.style.borderLeft = `${(childCount - 1) * 2}px solid #EF7D3C`;
-
-        const parentSummary = parentDIV.querySelector('summary');
-        item.style.visibility = '';
-        parentSummary.style.border = "";
-        parentSummary.style.color = '';
-    } else {
-        createKasaneDiv(item, dropElement);
-    }
-
-    // 元メモを履歴欄から削除
-    const memoId = post.memoId;
-    const memo = $(memoId);
-    if (memo) { memo.remove(); }
-}
-
 function handleBroadcastDrop(data) {
     console.log('handleBroadcastDrop: ', data);
     const draggedElement = $(data.draggedId);
@@ -393,9 +362,9 @@ function handleBroadcastDrop(data) {
     if (parentDIV) {
         addChildElement(parentDIV, draggedElement);
 
-        const detailsContainer = $(data.postSet.id).closest('.accordion');
-        const childCount = detailsContainer.children.length; // 要素ノードの数を取得
-        detailsContainer.style.borderLeft = `${(childCount - 1) * 2}px solid #EF7D3C`;
+        const childPElements = parentDIV.querySelectorAll('p.child');
+        const childPCount = childPElements.length;
+        parentDIV.style.borderLeft = `${(childPCount - 1) * 2}px solid #EF7D3C`;
 
         const parentSummary = parentDIV.querySelector('summary');
         draggedElement.style.visibility = '';
@@ -533,7 +502,7 @@ function handleDrop(event) {
     if (!dropElement) { console.log('no dropElement'); return; }
 
     draggedElement.classList.contains('memo')
-        ? undisclosedMemoDrop(event, dropElement)
+        ? console.log('メモを動かしている')
         : overtDrop(dropElement);
 }
 
@@ -545,6 +514,10 @@ function overtDrop(dropElement) {
         addChildElement(parentDIV, draggedElement);
         const summaryElement = parentDIV.querySelector('summary');
         dropId = summaryElement.id;
+
+        const childPElements = parentDIV.querySelectorAll('p.child');
+        const childPCount = childPElements.length;
+        parentDIV.style.borderLeft = `${(childPCount - 1) * 2}px solid #EF7D3C`;
     } else {
         createKasaneDiv(draggedElement, dropElement);
         dropId = dropElement.id;
@@ -552,13 +525,6 @@ function overtDrop(dropElement) {
     const twoID = { draggedId: draggedElement.id, dropId: dropId };
     socket.emit('drop', twoID);
 }
-
-// memo を重ねてオープン
-function undisclosedMemoDrop(event, dropElement) { // dropElement: ml / detailsContainer
-    const parentDIV = dropElement.closest('.accordion');
-    const dropId = parentDIV ? parentDIV.querySelector('summary').id : dropElement.id;
-    socket.emit('undisclosedMemoDrop', draggedElement.id, dropId); // サーバでメモをポストにする
-};
 
 function changeTagName(oldElement, newTagName) {
     const newElement = document.createElement(newTagName);
