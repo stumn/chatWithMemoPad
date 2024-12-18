@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     height: 100vh;
-    overflow: hidden;
+    overflow-y: auto;
     background-color: rgb(240, 240, 240);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -533,3 +533,7 @@ span.bookmark-count {
     box-shadow: none;
     transform: translateY(5px);
 }
+/* 
+.myChat {
+    background-color: rgba(250, 250, 210, 0.896);   
+} */

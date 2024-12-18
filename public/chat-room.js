@@ -27,18 +27,24 @@ const memoPad = $('memoPad');
 const hoverButton = $('hoverButton');
 // const notification = $('notification');
 const form = $('form');
+const nameSelect = $('name-select');
 const input = $('input');
 const formButton = $('formButton');
-const nameSelect = $('name-select');
 
 let dropElement;
 let loginName;
 
 // 選択範囲を監視
-memoPad.addEventListener('input', () => {
+let count = 0;
+const cycle = 10;
+memoPad.addEventListener('input', () => { // 字の入力・文章選択などあらゆる変化でinputイベント
     updateButtonPosition();
-    updateSaveData();
 });
+
+memoPad.addEventListener('change', () => { // テキストエリア外をクリックするとchangeイベント
+    updateSaveData();
+    console.log('local saved: ', localStorage.getItem('memoPad'));
+})
 
 // 選択範囲の変更を検知
 memoPad.addEventListener('selectionchange', () => {
@@ -319,6 +325,7 @@ function createChildElement(kobun) { // <p .child>
 function handleMyChat(post) { // MyChat ドラッグ可能
     const item = buildMlElement(post);
     enableDragAndDrop(item);
+    item.classList.add('myChat');
     appendChildWithIdAndScroll(item, post, true);
 }
 
