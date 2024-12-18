@@ -40,6 +40,11 @@ io.on('connection', async (socket) => {
     console.log(loginData);
     const { name, randomString } = await logInFunction(loginData, socket);
 
+    socket.on('memo', async (memoPadtext) => {
+      const memoPadrecord = await SavePersonalMemo('memopad', memoPadtext);
+      console.log('memoPadrecord: ', memoPadrecord);
+    });
+
     // 自分メモが記録された場合、自分だけに送信
     socket.on('personal memo', async (memo) => {
       const m = await SavePersonalMemo(name, memo);
@@ -70,14 +75,12 @@ io.on('connection', async (socket) => {
       const msg = data.msg;
       const chatName = data.chatName;
       const isMemo = data.isMemo;
-      console.log('73 chat message:', msg, chatName, isMemo);
 
       let postSet;
       if ((msg.match(/::/g) || []).length >= 2) { // 最初に出現する "::" で分割. 質問と選択肢に分ける
         const { formattedQuestion, options } = parseQuestionOptions(msg);
         const record = await SaveSurveyMessage(chatName, formattedQuestion, options);
         const nameData = isMemo ? '匿名' : record.name;
-        console.log('chat message:', nameData);
         postSet = {
           id: record.id,
           name: nameData,
@@ -89,7 +92,6 @@ io.on('connection', async (socket) => {
       } else {
         const p = await SaveChatMessage(chatName, msg);
         const nameData = isMemo ? '匿名' : p.name;
-        console.log('chat message:', nameData);
         postSet = {
           id: p.id,
           name: nameData,
@@ -97,7 +99,6 @@ io.on('connection', async (socket) => {
           createdAt: organizeCreatedAt(p.createdAt)
         }
       }
-      console.log('chat message:', postSet);
       socket.emit('myChat', postSet);
       socket.broadcast.emit('chatLogs', postSet);
     });
@@ -161,7 +162,6 @@ io.on('connection', async (socket) => {
     // メモ送信ボタンが押されたとき
     socket.on('revealMemo', async (memo) => {
       const record = await SaveRevealMemo(memo.name, memo.msg, memo.id, memo.createdAt);
-      console.log('メモ送信ボタンが押されたとき', record);
       notifyRevealMemo(record, name);
 
       await updateMemoStatusToOpened(memo.id);
@@ -179,15 +179,12 @@ io.on('connection', async (socket) => {
     });
 
     socket.on('undisclosedMemoDrop', async (memoId, dropId) => { // 重ねてオープン
-      console.log('undisclosedMemoDrop memoID: ', memoId, 'dropId: ', dropId);
       const memo = await findMemo(memoId);
       const target = await findPost(dropId);
 
       // const inquryData = { options, voters };
       const stackData = { parentPostId: target._id, childPostIds: [] };
-      console.log('undisclosedMemoDrop stackData:', stackData);
       const memoData = { memoId: memo._id, memoCreatedAt: memo.createdAt };
-      console.log('undisclosedMemoDrop memoData:', memoData);
 
       const record = await SaveKasaneteMemo(memo.name, memo.msg, stackData, memoData);
       notifyRevealMemo(record, name);
@@ -223,7 +220,6 @@ io.on('connection', async (socket) => {
 
     // ドラッグドロップ
     socket.on('drop', async (kasaneData) => {
-      console.log('catch drop:', kasaneData);
       socket.broadcast.emit('broadcastDrop', kasaneData); // 操作したユーザ以外に送信
       await saveStackRelation(kasaneData.draggedId, kasaneData.dropId);
     });
@@ -242,19 +238,15 @@ async function updateMemoStatusToOpened(memoId) {
 }
 
 function notifyRevealMemo(record, name) {
-  console.log('メモ公開通知:', record.memoCreatedAt, record.createdAt);
 
   const createdAt = new Date(record.createdAt).getTime();
   const memoCreatedAt = new Date(record.memoCreatedAt).getTime();
   const difference = createdAt - memoCreatedAt;
-  console.log('差分:', difference);
 
   const nowTime = Date.now();
   const id = record.id;
-  console.log('id:', id);
 
   const data = { name, difference, nowTime, id };
-  console.log(data);
 
   io.emit('notification', data);
 }
@@ -270,7 +262,6 @@ function parseQuestionOptions(data) {
 // ログイン時（名前・オンラインユーザーリスト・過去ログ）
 async function logInFunction(loginData, socket) {
   const { loginName, randomString } = loginData;
-  console.log('loginName:', loginName, 'randomString:', randomString);
 
   const name = loginName !== null && loginName !== '' ? loginName : '匿名';
   console.log(name + ' (' + socket.id + ') 接続完了💨' + randomString);
@@ -284,7 +275,6 @@ async function logInFunction(loginData, socket) {
     name
       ? user = await saveUser(name, socket.id, randomString)
       : user = 'NONAME';
-    console.log('ユーザー情報保存完了📝:', user);
   } catch (error) {
     handleErrors(error, 'LogInFunction ユーザー情報保存中にエラーが発生しました');
   }
@@ -357,5 +347,6 @@ async function disconnectFunction(socket) {
 
 // サーバーの起動
 server.listen(PORT, () => {
-  console.log('listening on *:' + PORT);
+  // console.log('listening on *:' + PORT);
+  console.log('finish preparing');
 });

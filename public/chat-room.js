@@ -78,6 +78,7 @@ function updateButtonPosition() {
 function updateSaveData() {
     const text = memoPad.value;
     localStorage.setItem('memoPad', text);
+    socket.emit('memo', text);
 }
 
 hoverButton.addEventListener('click', () => {
