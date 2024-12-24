@@ -79,8 +79,9 @@ io.on('connection', async (socket) => {
       let postSet;
       if ((msg.match(/::/g) || []).length >= 2) { // 最初に出現する "::" で分割. 質問と選択肢に分ける
         const { formattedQuestion, options } = parseQuestionOptions(msg);
-        const record = await SaveSurveyMessage(chatName, formattedQuestion, options);
-        const nameData = isMemo ? '匿名' : record.name;
+        const nameData = isMemo ? '匿名メモ' : chatName;
+        const record = await SaveSurveyMessage(nameData, formattedQuestion, options);
+        
         postSet = {
           id: record.id,
           name: nameData,
@@ -90,8 +91,8 @@ io.on('connection', async (socket) => {
           createdAt: organizeCreatedAt(record.createdAt)
         }
       } else {
-        const p = await SaveChatMessage(chatName, msg);
-        const nameData = isMemo ? '匿名' : p.name;
+        const nameData = isMemo ? '匿名メモ' : chatName;
+        const p = await SaveChatMessage(nameData, msg);
         postSet = {
           id: p.id,
           name: nameData,
