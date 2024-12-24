@@ -269,6 +269,8 @@ async function logInFunction(loginData, socket) {
 
   onlineUsers.push(name);
   idsOnlineUsers.push({ id: socket.id, name: name });
+  const nowTime = new Date().getTime();
+  console.log(nowTime, onlineUsers.length, onlineUsers);
   io.emit('onlineUsers', onlineUsers);
 
   try { // ユーザー情報を保存 
