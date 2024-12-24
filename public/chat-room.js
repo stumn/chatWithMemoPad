@@ -164,12 +164,20 @@ function BackToLogin() {
 socket.on('onlineUsers', (onlines) => {
     const num = onlines.length;
     let displayMsg;
-    if (num > 25) { displayMsg = `盛り上がっています！${num}人と交流できます！`; }
-    else if (num > 12) { displayMsg = `活気のあるコミュニティです！今すぐ参加しよう！`; }
-    else if (num > 8) { displayMsg = `${num}人で語り合っています。お気軽に参加ください！`; }
-    else if (num > 4) { displayMsg = `ブックマーク・重ねる機能は試した？こっそり応援が嬉しいかも！`; }
-    else if (num > 1) { displayMsg = '新しい話題を共有しませんか？ あなたの一言で盛り上がります！'; }
-    else { displayMsg = `あなただけ！プライベートな空間でゆっくりどうぞ！`; }
+    if (num > 25) {
+        displayMsg = `現在${num}人が参加中。非常に高いアクティビティレベルです！`;
+    } else if (num > 12) {
+        displayMsg = `活発な会話が進行中！${num}人の意見を聞いてみましょう。`;
+    } else if (num > 8) {
+        displayMsg = `交流が深まっています。新しい話題を提供するチャンスです！`;
+    } else if (num > 4) {
+        displayMsg = `会話に加わりませんか？ブックマークや他の機能もおすすめです！`;
+    } else if (num > 1) {
+        displayMsg = `今が話題を切り出すチャンス！気軽に会話を始めてみましょう。`;
+    } else {
+        displayMsg = `贅沢なプライベート空間をお楽しみください！`;
+    }
+
     console.log('onlines: ', num);
     $('onlines').textContent = displayMsg;
 });
