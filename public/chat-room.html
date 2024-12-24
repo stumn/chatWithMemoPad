@@ -11,11 +11,9 @@
 
 <body>
   <header>
-    <button id="backButton" onclick="BackToLogin()">ログイン画面に戻る</button>
-    <div>
-      <span id="onlines"></span>
-      <span id="sign-up-name"></span>
-    </div>
+    <button id="backButton" onclick="BackToLogin()">←</button>
+    <span id="sign-up-name"></span>
+    <span id="onlines"></span>
   </header>
 
   <main>
@@ -38,10 +36,10 @@
 
     <div id="privateMemo">
       <div id="memoButtons">
-        <button id="memoPadButton">ここはメモ帳</button>
+        <button id="memoPadButton">メモ帳を保存</button>
         <button id="copyButton">テキストコピー📋</button>
       </div>
-      <textarea id="memoPad">ここにメモを入力できます ここにメモを入力できます ここにメモを入力できます</textarea>
+      <textarea id="memoPad"></textarea>
       <button id="hoverButton">メモ公開</button>
     </div>
   </main>

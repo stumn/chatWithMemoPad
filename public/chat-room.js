@@ -6,14 +6,6 @@ const socket = io.connect('https://chatwithmemopad.onrender.com', {
     timeout: 10000,                 // 接続試行のタイムアウト時間（ミリ秒）
 });
 
-// const socket = io.connect('localhost:3000', {
-//     reconnect: true,                // 自動再接続を有効にする
-//     reconnectionAttempts: Infinity, // 無限回再接続を試みる
-//     reconnectionDelay: 1000,        // 再接続前の待機時間（ミリ秒）
-//     reconnectionDelayMax: 5000,     // 最大待機時間（ミリ秒）
-//     timeout: 10000,                 // 接続試行のタイムアウト時間（ミリ秒）
-// });
-
 // html要素の取得
 function $(id) {
     if (!id) { console.error('id is not defined'); }
@@ -24,6 +16,7 @@ function $(id) {
 
 const messageLists = $('messageLists');
 const memoPad = $('memoPad');
+const memoPadButton = $('memoPadButton');
 const hoverButton = $('hoverButton');
 // const notification = $('notification');
 const form = $('form');
@@ -75,6 +68,10 @@ function updateButtonPosition() {
     }
 }
 
+memoPadButton.addEventListener('click', () => {
+    updateSaveData();
+});
+
 function updateSaveData() {
     const text = memoPad.value;
     localStorage.setItem('memoPad', text);
@@ -117,6 +114,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedMemo = localStorage.getItem('memoPad');
     if (savedMemo) {
         memoPad.value = savedMemo; // 保存されているメモを表示
+    } else {
+        memoPad.value = `「メモ公開」機能で挨拶してみて！
+
+文字選択（カーソル・Shiftキー）
+→「メモ公開」ボタンをクリック
+→メモ公開！（名前は「匿名メモ」だよ！）
+        
+・おはようございます！  ・こんにちは！
+・こんばんは、おやすみなさい！
+・お疲れ様です！  ・お誕生日おめでとう！
+・よろしくお願いします！
+
+他の機能：
+・自分の投稿を別の投稿と重ねる！
+・チャットの☆で「いいね」＆メモにコピー！
+・メモは公開しない限り他の人に見えないから、自分用メモに専念してもOK!
+（実験ログには、匿名でメモ内容だけ保存します。）`;
     }
 
     const pathname = window.location.pathname;
@@ -140,7 +154,15 @@ function BackToLogin() {
 
 // 同時参加者数
 socket.on('onlineUsers', (onlines) => {
-    $('onlines').textContent = '接続中: ' + onlines.length + '人';
+    const num = onlines.length;
+    let displayMsg;
+    if (num > 30) { displayMsg = `盛り上がっています！たくさんの人と交流できます！`; }
+    else if (num > 15) { displayMsg = `活気のあるコミュニティです！今すぐ参加しよう！`; }
+    else if (num > 8) { displayMsg = `${num}人で語り合っています。お気軽に参加ください！`; }
+    else if (num > 1) { displayMsg = '新しい話題を共有しませんか？ あなたの一言で盛り上がります！'; }
+    else { displayMsg = `あなただけ！プライベートな空間でゆっくりどうぞ！`; }
+    console.log('onlines: ', num);
+    $('onlines').textContent = displayMsg;
 });
 
 ///////////////////////////////////////////////////
@@ -708,6 +730,7 @@ function setupBookmarkClickHandler(button, message) {
 function addToMemoPad(message) {
     const messageContent = message.msg + '(' + message.name + ')' + '\n';
     memoPad.value += messageContent;
+    updateSaveData();
 }
 
 function enableDragAndDrop(item) {
