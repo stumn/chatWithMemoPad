@@ -60,9 +60,8 @@
 
         if (username) {
             const errors = []; // エラーをまとめて管理
-
-            if (username.length > 10) {
-                errors.push('名前が長すぎます（10文字以内で入力してください）。');
+            if (username.length < 1 || username.length > 20) {
+                errors.push('名前は1文字以上20文字以内で入力してください。');
             }
             if (username.includes(' ') || username.includes('　')) {
                 errors.push('名前にはスペースを使用できません。');
