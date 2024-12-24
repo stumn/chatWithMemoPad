@@ -1,4 +1,12 @@
-const socket = io.connect('https://chatwithmemopad.onrender.com', {
+// const socket = io.connect('https://chatwithmemopad.onrender.com', {
+//     reconnect: true,                // 自動再接続を有効にする
+//     reconnectionAttempts: Infinity, // 無限回再接続を試みる
+//     reconnectionDelay: 1000,        // 再接続前の待機時間（ミリ秒）
+//     reconnectionDelayMax: 5000,     // 最大待機時間（ミリ秒）
+//     timeout: 10000,                 // 接続試行のタイムアウト時間（ミリ秒）
+// });
+
+const socket = io.connect('localhost:3000', {
     reconnect: true,                // 自動再接続を有効にする
     reconnectionAttempts: Infinity, // 無限回再接続を試みる
     reconnectionDelay: 1000,        // 再接続前の待機時間（ミリ秒）
@@ -156,9 +164,10 @@ function BackToLogin() {
 socket.on('onlineUsers', (onlines) => {
     const num = onlines.length;
     let displayMsg;
-    if (num > 30) { displayMsg = `盛り上がっています！たくさんの人と交流できます！`; }
-    else if (num > 15) { displayMsg = `活気のあるコミュニティです！今すぐ参加しよう！`; }
+    if (num > 25) { displayMsg = `盛り上がっています！${num}人と交流できます！`; }
+    else if (num > 12) { displayMsg = `活気のあるコミュニティです！今すぐ参加しよう！`; }
     else if (num > 8) { displayMsg = `${num}人で語り合っています。お気軽に参加ください！`; }
+    else if (num > 4) { displayMsg = `ブックマーク・重ねる機能は試した？こっそり応援が嬉しいかも！`; }
     else if (num > 1) { displayMsg = '新しい話題を共有しませんか？ あなたの一言で盛り上がります！'; }
     else { displayMsg = `あなただけ！プライベートな空間でゆっくりどうぞ！`; }
     console.log('onlines: ', num);
